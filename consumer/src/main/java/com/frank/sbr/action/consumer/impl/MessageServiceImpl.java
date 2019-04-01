@@ -1,6 +1,6 @@
 package com.frank.sbr.action.consumer.impl;
 
-import com.frank.sbr.action.provider.service.MessageService;
+import com.frank.sbr.action.consumer.service.MessageService;
 import org.springframework.stereotype.Service;
 
 /**
