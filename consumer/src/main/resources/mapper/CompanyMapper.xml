@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.frank.sbr.action.consumer.mapper.CompanyMapper">
+  <resultMap id="BaseResultMap" type="com.frank.sbr.action.po.Company">
+    <id column="c_id" jdbcType="INTEGER" property="cId" />
+    <result column="c_name" jdbcType="VARCHAR" property="cName" />
+    <result column="c_des" jdbcType="VARCHAR" property="cDes" />
+    <result column="c_code" jdbcType="VARCHAR" property="cCode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    c_id, c_name, c_des, c_code
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from company
+    where c_id = #{cId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from company
+    where c_id = #{cId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.frank.sbr.action.po.Company">
+    insert into company (c_id, c_name, c_des, 
+      c_code)
+    values (#{cId,jdbcType=INTEGER}, #{cName,jdbcType=VARCHAR}, #{cDes,jdbcType=VARCHAR}, 
+      #{cCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.frank.sbr.action.po.Company">
+    insert into company
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="cId != null">
+        c_id,
+      </if>
+      <if test="cName != null">
+        c_name,
+      </if>
+      <if test="cDes != null">
+        c_des,
+      </if>
+      <if test="cCode != null">
+        c_code,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="cId != null">
+        #{cId,jdbcType=INTEGER},
+      </if>
+      <if test="cName != null">
+        #{cName,jdbcType=VARCHAR},
+      </if>
+      <if test="cDes != null">
+        #{cDes,jdbcType=VARCHAR},
+      </if>
+      <if test="cCode != null">
+        #{cCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.frank.sbr.action.po.Company">
+    update company
+    <set>
+      <if test="cName != null">
+        c_name = #{cName,jdbcType=VARCHAR},
+      </if>
+      <if test="cDes != null">
+        c_des = #{cDes,jdbcType=VARCHAR},
+      </if>
+      <if test="cCode != null">
+        c_code = #{cCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where c_id = #{cId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.frank.sbr.action.po.Company">
+    update company
+    set c_name = #{cName,jdbcType=VARCHAR},
+      c_des = #{cDes,jdbcType=VARCHAR},
+      c_code = #{cCode,jdbcType=VARCHAR}
+    where c_id = #{cId,jdbcType=INTEGER}
+  </update>
+</mapper>

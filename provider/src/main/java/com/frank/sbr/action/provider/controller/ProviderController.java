@@ -1,6 +1,7 @@
-package com.frank.sbr.action.controller;
+package com.frank.sbr.action.provider.controller;
 
-import com.frank.sbr.action.service.SendMessageService;
+import com.frank.sbr.action.provider.service.SendService;
+import com.frank.sbr.action.vo.CompanyVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,31 +12,31 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @description：
  * @author: Yang.Chang
  * @project: spring-boot-rocketmq-action
- * @package: com.frank.sbr.action.controller、
+ * @package: com.frank.sbr.action.provider.controller、
  * @email: cy880708@163.com
- * @date: 2019/3/29 下午4:18
+ * @date: 2019/4/1 下午1:25
  * @mofified By:
  */
 @Controller
-@RequestMapping(value = "/action")
-public class ActionController {
+public class ProviderController {
+
 
     @Autowired
-    private SendMessageService sendMessageService;
+    private SendService sendServiceImpl;
 
     /**
-     * @description：
+     * @description：新增用户信息x
      * @version 1.0
      * @author: Yang.Chang
      * @email: cy880708@163.com
-     * @date: 2019/3/29 下午4:19
+     * @date: 2018/11/14 下午1:52
      * @mofified By:
      */
     @ResponseBody
-    @RequestMapping(value = "/sendMessage")
-    public int sendMessage(String message){
-//        return userService.addUser(user);
-        return 1;
+    @RequestMapping(value = "/sendOrderMessage")
+    public int sendOrderMessage(CompanyVO companyVO){
+        return sendServiceImpl.sendSimpleMessage(companyVO);
     }
+
 
 }
