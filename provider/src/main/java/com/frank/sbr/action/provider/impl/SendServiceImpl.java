@@ -8,6 +8,7 @@ import com.frank.sbr.action.vo.CompanyVO;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.MQProducer;
+import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.UUID;
 
 /**
  * @version 1.0
@@ -47,12 +49,21 @@ public class SendServiceImpl implements SendService {
 
             Message msg = new Message(Constants.MQ_DEFAULT_TOPIC,
                     Constants.MQ_DEFAULT_TOPIC_TAG,
-                    "KEY_SIMPLE",
+                    UUID.randomUUID().toString().replaceAll("-", ""),
                     (voString).getBytes(RemotingHelper.DEFAULT_CHARSET));
             SendResult sendResult = producer.send(msg);
 
-            // 输出响应结果
-            logger.info("sendResult toString : " + sendResult.toString());
+            producer.send(msg, new SendCallback() {
+                @Override
+                public void onSuccess(SendResult sendResult) {
+                    logger.info("传输成功");
+                    logger.info(JsonUtil.beanToJson(sendResult));
+                }
+                @Override
+                public void onException(Throwable e) {
+                    logger.error("传输失败", e);
+                }
+            });
 
             // 发送后关闭生产者
             producer.shutdown();

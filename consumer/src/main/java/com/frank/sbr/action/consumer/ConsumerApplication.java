@@ -1,4 +1,4 @@
-package com.frank.sbr.action;
+package com.frank.sbr.action.consumer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,8 +14,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @mofified By:
  */
 @SpringBootApplication
-public class RocketMqConsumerApplication {
+public class ConsumerApplication {
     public static void main(String[] args) {
-        SpringApplication.run(RocketMqConsumerApplication.class, args);
+        SpringApplication.run(ConsumerApplication.class, args);
     }
 }

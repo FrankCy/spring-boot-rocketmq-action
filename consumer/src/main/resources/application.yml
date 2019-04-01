@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    name: mysql_test
+    name: frank_database
     type: com.alibaba.druid.pool.DruidDataSource
     #druid相关配置
     druid:
@@ -11,9 +11,9 @@ spring:
       filters: stat
       driver-class-name: com.mysql.jdbc.Driver
       #基本属性
-      url: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
+      url: jdbc:mysql://127.0.0.1:3306/frank?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
       username: root
-      password: root
+      password: frank
       #配置初始化大小/最小/最大
       initial-size: 1
       min-idle: 1
@@ -34,4 +34,4 @@ spring:
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.sb.mb.model
+  type-aliases-package: com.frank.sbr.action.consumer.mapper

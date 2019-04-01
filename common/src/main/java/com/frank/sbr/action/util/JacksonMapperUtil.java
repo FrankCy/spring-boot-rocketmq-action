@@ -29,6 +29,7 @@ public class JacksonMapperUtil {
 
     /** 记录日志的变量 */
     private static final Logger logger        = LoggerFactory.getLogger(JacksonMapperUtil.class);
+
     /** 静态ObjectMapper */
     private ObjectMapper mapper;
 
