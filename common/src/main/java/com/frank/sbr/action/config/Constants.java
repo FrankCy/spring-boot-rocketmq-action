@@ -23,6 +23,16 @@ public class Constants {
     public static final String MQ_DEFAULT_GROUP_NAME = "FRANK_GROUP";
 
     /**
+     * 默认分组(Thread)
+     */
+    public static final String MQ_DEFAULT_GROUP_THREAD_NAME = "FRANK_THREAD_GROUP";
+
+    /**
+     * 默认分组(Thread)
+     */
+    public static final String MQ_DEFAULT_THREAD_NAME = "client-transaction-msg-check-thread";
+
+    /**
      * 默认事务分组
      */
     public static final String MQ_DEFAULT_THREAD_GROUP_NAME = "FRANK_THREAD_GROUP";

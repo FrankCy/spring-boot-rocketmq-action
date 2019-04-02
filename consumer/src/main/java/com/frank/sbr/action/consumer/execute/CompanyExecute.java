@@ -25,7 +25,7 @@ public class CompanyExecute {
     private CompanyService companyServiceImpl;
 
     /**
-     * 初始化当前类
+     * 初始化当前类，添加@PostConstruct注解意思是方法调用时完成注册
      */
     @PostConstruct
     public void init() {

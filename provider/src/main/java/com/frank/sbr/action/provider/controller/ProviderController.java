@@ -3,9 +3,11 @@ package com.frank.sbr.action.provider.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.frank.sbr.action.config.Constants;
 import com.frank.sbr.action.provider.config.ProducerConfigure;
+import com.frank.sbr.action.provider.config.ProducerThreadConfigure;
 import com.frank.sbr.action.provider.service.SendService;
 import com.frank.sbr.action.util.JsonUtil;
 import com.frank.sbr.action.vo.CompanyVO;
+import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -41,6 +45,9 @@ public class ProviderController {
 
     @Autowired
     private ProducerConfigure producerConfigure;
+
+    @Autowired
+    private ProducerThreadConfigure producerThreadConfigure;
 
     /**
      * @description：
@@ -77,7 +84,6 @@ public class ProviderController {
             }
         });
     }
-
 
     /**
      * @description：新增公司
@@ -117,5 +123,55 @@ public class ProviderController {
             }
         });
     }
+
+    /**
+     * @description：新增多条数据
+     * @version 1.0
+     * @author: Yang.Chang
+     * @email: cy880708@163.com
+     * @date: 2019/4/2 下午2:18
+     * @mofified By:
+     */
+    @ResponseBody
+    @RequestMapping(value = "/insertData")
+    public void insertData(CompanyVO companyVO) {
+
+        JSONObject jsonObject = new JSONObject();
+        // 执行程序
+        jsonObject.put("serviceUri", Constants.DEFAULT_SERVICE_PACKAGE+".CompanyExecute");
+        // 调用的方法
+        jsonObject.put("invoke", "insertData");
+        // 传递的参数
+        jsonObject.put("params", JsonUtil.beanToJson(companyVO));
+
+        sendThreadMessage(jsonObject);
+        sendThreadMessage(jsonObject);
+        sendThreadMessage(jsonObject);
+    }
+
+    public void sendThreadMessage(JSONObject jsonObject) {
+
+        Message message = new Message(Constants.MQ_DEFAULT_TOPIC,
+                Constants.MQ_DEFAULT_TOPIC_TAG,
+                UUID.randomUUID().toString().replaceAll("-", ""),
+                jsonObject.toJSONString().getBytes());
+
+        try {
+            producerThreadConfigure.defaultProducer().sendMessageInTransaction(message, new SendCallback() {
+                @Override
+                public void onSuccess(SendResult sendResult) {
+                    logger.info("传输成功");
+                    logger.info(JsonUtil.beanToJson(sendResult));
+                }
+                @Override
+                public void onException(Throwable e) {
+                    logger.error("传输失败", e);
+                }
+            });
+        } catch (MQClientException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }
