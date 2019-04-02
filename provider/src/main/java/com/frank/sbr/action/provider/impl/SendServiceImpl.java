@@ -84,7 +84,8 @@ public class SendServiceImpl implements SendService {
     }
 
     @Override
-    public int sendOrderMessage() {
+    public int sendOrderMessage(String jsonString) {
+        System.out.println("jsonString : " + jsonString);
         return 0;
     }
 

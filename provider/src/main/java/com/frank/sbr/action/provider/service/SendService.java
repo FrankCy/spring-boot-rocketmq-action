@@ -32,7 +32,7 @@ public interface SendService {
      * @date: 2019/4/1 下午1:37
      * @mofified By:
      */
-    int sendOrderMessage();
+    int sendOrderMessage(String jsonString);
 
     /**
      * @description：广播发送消息

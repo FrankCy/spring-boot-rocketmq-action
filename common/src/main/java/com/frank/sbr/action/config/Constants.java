@@ -37,4 +37,11 @@ public class Constants {
      */
     public static final String MQ_DEFAULT_TOPIC_TAG = "TOPIC_TEST_TAG";
 
+    /**
+     * 默认值
+     */
+    public static final String DEFAULT_SERVICE_PACKAGE = "com.frank.sbr.action.consumer.execute";
+
+
+
 }

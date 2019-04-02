@@ -1,7 +1,6 @@
 package com.frank.sbr.action.consumer.config;
 
 import com.frank.sbr.action.config.Constants;
-import org.apache.tomcat.util.bcel.Const;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.Serializable;

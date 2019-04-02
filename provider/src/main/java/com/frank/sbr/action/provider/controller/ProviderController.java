@@ -1,5 +1,6 @@
 package com.frank.sbr.action.provider.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.frank.sbr.action.config.Constants;
 import com.frank.sbr.action.provider.config.ProducerConfigure;
 import com.frank.sbr.action.provider.service.SendService;
@@ -64,6 +65,46 @@ public class ProviderController {
                 JsonUtil.beanToJson(companyVO).getBytes());
         // 这里用到了这个mq的异步处理，类似ajax，可以得到发送到mq的情况，并做相应的处理
         //不过要注意的是这个是异步的
+        producerConfigure.defaultProducer().send(message, new SendCallback() {
+            @Override
+            public void onSuccess(SendResult sendResult) {
+                logger.info("传输成功");
+                logger.info(JsonUtil.beanToJson(sendResult));
+            }
+            @Override
+            public void onException(Throwable e) {
+                logger.error("传输失败", e);
+            }
+        });
+    }
+
+
+    /**
+     * @description：新增公司
+     * @version 1.0
+     * @author: Yang.Chang
+     * @email: cy880708@163.com
+     * @date: 2019/4/2 下午2:18
+     * @mofified By:
+     */
+    @ResponseBody
+    @RequestMapping(value = "/insertCompany")
+    public void insertCompany(CompanyVO companyVO) throws Exception {
+
+        JSONObject jsonObject = new JSONObject();
+        // 执行程序
+        jsonObject.put("serviceUri", Constants.DEFAULT_SERVICE_PACKAGE+".CompanyExecute");
+        // 调用的方法
+        jsonObject.put("invoke", "insertCompany");
+        // 传递的参数
+        jsonObject.put("params", JsonUtil.beanToJson(companyVO));
+
+        Message message = new Message(Constants.MQ_DEFAULT_TOPIC,
+                Constants.MQ_DEFAULT_TOPIC_TAG,
+                UUID.randomUUID().toString().replaceAll("-", ""),
+                jsonObject.toJSONString().getBytes());
+        // 这里用到了这个mq的异步处理，类似ajax，可以得到发送到mq的情况，并做相应的处理
+        // 不过要注意的是这个是异步的
         producerConfigure.defaultProducer().send(message, new SendCallback() {
             @Override
             public void onSuccess(SendResult sendResult) {
