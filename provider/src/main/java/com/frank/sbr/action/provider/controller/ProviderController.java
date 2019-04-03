@@ -8,21 +8,16 @@ import com.frank.sbr.action.provider.service.SendService;
 import com.frank.sbr.action.util.JsonUtil;
 import com.frank.sbr.action.vo.CompanyVO;
 import org.apache.rocketmq.client.exception.MQClientException;
-import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -140,7 +135,7 @@ public class ProviderController {
         // 执行程序
         jsonObject.put("serviceUri", Constants.DEFAULT_SERVICE_PACKAGE+".CompanyExecute");
         // 调用的方法
-        jsonObject.put("invoke", "insertData");
+        jsonObject.put("invoke", "insertCompany");
         // 传递的参数
         jsonObject.put("params", JsonUtil.beanToJson(companyVO));
 
@@ -151,13 +146,15 @@ public class ProviderController {
 
     public void sendThreadMessage(JSONObject jsonObject) {
 
-        Message message = new Message(Constants.MQ_DEFAULT_TOPIC,
+        Message message = new Message(
+                Constants.MQ_DEFAULT_TOPIC,
                 Constants.MQ_DEFAULT_TOPIC_TAG,
                 UUID.randomUUID().toString().replaceAll("-", ""),
-                jsonObject.toJSONString().getBytes());
+                jsonObject.toJSONString().getBytes()
+        );
 
         try {
-            producerThreadConfigure.defaultProducer().sendMessageInTransaction(message, new SendCallback() {
+            Object object = producerThreadConfigure.defaultThreadProducer().sendMessageInTransaction(message, new SendCallback() {
                 @Override
                 public void onSuccess(SendResult sendResult) {
                     logger.info("传输成功");
@@ -168,7 +165,13 @@ public class ProviderController {
                     logger.error("传输失败", e);
                 }
             });
+
+            Thread.sleep(10);
+            logger.info("object : " + object.toString());
+
         } catch (MQClientException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

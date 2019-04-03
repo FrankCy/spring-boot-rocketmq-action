@@ -37,8 +37,8 @@ public class ProviderThreadConfig {
     }
 
     public ProviderThreadConfig() {
-        this.namesrvAddr = Constants.MQ_DEFAULT_GROUP_THREAD_NAME;
-        this.groupName = Constants.MQ_DEFAULT_GROUP_NAME;
+        this.namesrvAddr = Constants.MQ_DEFAULT_ADDRESS;
+        this.groupName = Constants.MQ_DEFAULT_GROUP_THREAD_NAME;
     }
 
     public ProviderThreadConfig(String namesrvAddr, String groupName) {

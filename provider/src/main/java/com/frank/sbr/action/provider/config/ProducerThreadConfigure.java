@@ -39,12 +39,12 @@ public class ProducerThreadConfigure {
      * @throws MQClientException
      */
     @Bean
-    public DefaultMQProducer defaultProducer() throws MQClientException {
+    public DefaultMQProducer defaultThreadProducer() throws MQClientException {
         logger.info("DefaultProducerThreadConfigure 正在创建---------------------------------------");
         logger.info(providerThreadConfig.toString());
-        TransactionListener transactionListener = new TransactionListenerImpl();
-
         TransactionMQProducer producer = new TransactionMQProducer(providerThreadConfig.getGroupName());
+        producer.setNamesrvAddr(providerThreadConfig.getNamesrvAddr());
+        TransactionListener transactionListener = new TransactionListenerImpl();
 
         ExecutorService executorService = new ThreadPoolExecutor(
                 2,
@@ -62,7 +62,6 @@ public class ProducerThreadConfigure {
                 }
         );
 
-        producer.setNamesrvAddr(providerThreadConfig.getNamesrvAddr());
         producer.setExecutorService(executorService);
         producer.setTransactionListener(transactionListener);
         producer.start();

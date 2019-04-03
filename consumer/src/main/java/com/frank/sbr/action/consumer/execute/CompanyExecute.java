@@ -37,4 +37,9 @@ public class CompanyExecute {
         return insertFlag;
     }
 
+    public boolean insertData(String companyVoString) {
+        boolean insertFlag = companyExecute.companyServiceImpl.insertCompany(companyVoString);
+        return insertFlag;
+    }
+
 }
