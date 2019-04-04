@@ -12,6 +12,7 @@ import com.frank.sbr.action.util.JsonUtil;
 import com.frank.sbr.action.vo.CompanyVO;
 import com.frank.sbr.action.vo.ParamVO;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.common.message.Message;
@@ -71,7 +72,8 @@ public class ProviderController {
                 JsonUtil.beanToJson(companyVO).getBytes());
         // 这里用到了这个mq的异步处理，类似ajax，可以得到发送到mq的情况，并做相应的处理
         //不过要注意的是这个是异步的
-        producerConfigure.defaultProducer().send(message, new SendCallback() {
+        DefaultMQProducer producer = producerConfigure.defaultProducer();
+        producer.send(message, new SendCallback() {
             @Override
             public void onSuccess(SendResult sendResult) {
                 logger.info("传输成功");
@@ -82,6 +84,7 @@ public class ProviderController {
                 logger.error("传输失败", e);
             }
         });
+        producer.shutdown();
     }
 
     /**
@@ -135,44 +138,53 @@ public class ProviderController {
     @RequestMapping(value = "/transactionData")
     public void insertData(ParamVO paramVO) {
 
-        JSONObject jsonObject = JSONObject.parseObject(JsonUtil.beanToJson(paramVO));
-        String cName = jsonObject.getString("cName");
-        String uName = jsonObject.getString("uName");
-        String dDes = jsonObject.getString("dDes");
-        int uAmount = jsonObject.getInteger("uAmount");
+        try {
+            DefaultMQProducer producer = producerThreadConfigure.defaultThreadProducer();
+            JSONObject jsonObject = JSONObject.parseObject(JsonUtil.beanToJson(paramVO));
+            String cName = jsonObject.getString("cName");
+            String uName = jsonObject.getString("uName");
+            String dDes = jsonObject.getString("dDes");
+            int uAmount = jsonObject.getInteger("uAmount");
 
-        Company company = new Company();
-        company.setcName(cName);
-        company.setcId(1);
+            Company company = new Company();
+            company.setcName(cName);
+            company.setcId(1);
 
-        User user = new User();
-        user.setUid("userId");
-        user.setUname(uName);
+            User user = new User();
+            user.setUid("userId");
+            user.setUname(uName);
 
-        Dept dept = new Dept();
-        dept.setDid("deptId");
-        dept.setDdes(dDes);
+            Dept dept = new Dept();
+            dept.setDid("deptId");
+            dept.setDdes(dDes);
 
-        JSONObject companyJson = initJson(
-                "CompanyExecute",
-                "updateCompany",
-                JsonUtil.beanToJson(company));
-        sendThreadMessage(companyJson);
+            JSONObject companyJson = initJson(
+                    "CompanyExecute",
+                    "updateCompany",
+                    JsonUtil.beanToJson(company));
+            sendThreadMessage(companyJson, producer);
 
-        JSONObject userJson = initJson(
-                "CompanyExecute",
-                "updateUser",
-                JsonUtil.beanToJson(user));
-        sendThreadMessage(userJson);
+            JSONObject userJson = initJson(
+                    "CompanyExecute",
+                    "updateUser",
+                    JsonUtil.beanToJson(user));
+            sendThreadMessage(userJson, producer);
 
-        JSONObject deptJson = initJson(
-                "CompanyExecute",
-                "updateDept",
-                JsonUtil.beanToJson(dept));
-        sendThreadMessage(deptJson);
+            JSONObject deptJson = initJson(
+                    "CompanyExecute",
+                    "updateDept",
+                    JsonUtil.beanToJson(dept));
+            sendThreadMessage(deptJson, producer);
+
+            producer.shutdown();
+
+
+        } catch (MQClientException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void sendThreadMessage(JSONObject jsonObject) {
+    public void sendThreadMessage(JSONObject jsonObject, DefaultMQProducer producer) {
 
         Message message = new Message(
                 Constants.MQ_DEFAULT_TOPIC,
@@ -182,20 +194,10 @@ public class ProviderController {
         );
 
         try {
-            Object object = producerThreadConfigure.defaultThreadProducer().sendMessageInTransaction(message, new SendCallback() {
-                @Override
-                public void onSuccess(SendResult sendResult) {
-                    logger.info("传输成功");
-                    logger.info(JsonUtil.beanToJson(sendResult));
-                }
-                @Override
-                public void onException(Throwable e) {
-                    logger.error("传输失败", e);
-                }
-            });
+            SendResult sendResult = producer.sendMessageInTransaction(message, null);
 
             Thread.sleep(10);
-            logger.info("object : " + object.toString());
+            logger.info("sendResult : " + sendResult.toString());
 
         } catch (MQClientException e) {
             e.printStackTrace();
