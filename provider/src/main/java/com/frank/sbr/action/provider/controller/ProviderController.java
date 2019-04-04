@@ -2,11 +2,15 @@ package com.frank.sbr.action.provider.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.frank.sbr.action.config.Constants;
+import com.frank.sbr.action.po.Company;
+import com.frank.sbr.action.po.Dept;
+import com.frank.sbr.action.po.User;
 import com.frank.sbr.action.provider.config.ProducerConfigure;
 import com.frank.sbr.action.provider.config.ProducerThreadConfigure;
 import com.frank.sbr.action.provider.service.SendService;
 import com.frank.sbr.action.util.JsonUtil;
 import com.frank.sbr.action.vo.CompanyVO;
+import com.frank.sbr.action.vo.ParamVO;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.SendCallback;
 import org.apache.rocketmq.client.producer.SendResult;
@@ -128,20 +132,44 @@ public class ProviderController {
      * @mofified By:
      */
     @ResponseBody
-    @RequestMapping(value = "/insertData")
-    public void insertData(CompanyVO companyVO) {
+    @RequestMapping(value = "/transactionData")
+    public void insertData(ParamVO paramVO) {
 
-        JSONObject jsonObject = new JSONObject();
-        // 执行程序
-        jsonObject.put("serviceUri", Constants.DEFAULT_SERVICE_PACKAGE+".CompanyExecute");
-        // 调用的方法
-        jsonObject.put("invoke", "insertCompany");
-        // 传递的参数
-        jsonObject.put("params", JsonUtil.beanToJson(companyVO));
+        JSONObject jsonObject = JSONObject.parseObject(JsonUtil.beanToJson(paramVO));
+        String cName = jsonObject.getString("cName");
+        String uName = jsonObject.getString("uName");
+        String dDes = jsonObject.getString("dDes");
+        int uAmount = jsonObject.getInteger("uAmount");
 
-        sendThreadMessage(jsonObject);
-        sendThreadMessage(jsonObject);
-        sendThreadMessage(jsonObject);
+        Company company = new Company();
+        company.setcName(cName);
+        company.setcId(1);
+
+        User user = new User();
+        user.setUid("userId");
+        user.setUname(uName);
+
+        Dept dept = new Dept();
+        dept.setDid("deptId");
+        dept.setDdes(dDes);
+
+        JSONObject companyJson = initJson(
+                "CompanyExecute",
+                "updateCompany",
+                JsonUtil.beanToJson(company));
+        sendThreadMessage(companyJson);
+
+        JSONObject userJson = initJson(
+                "CompanyExecute",
+                "updateUser",
+                JsonUtil.beanToJson(user));
+        sendThreadMessage(userJson);
+
+        JSONObject deptJson = initJson(
+                "CompanyExecute",
+                "updateDept",
+                JsonUtil.beanToJson(dept));
+        sendThreadMessage(deptJson);
     }
 
     public void sendThreadMessage(JSONObject jsonObject) {
@@ -174,6 +202,17 @@ public class ProviderController {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public JSONObject initJson(String serviceUri, String invoke, String params) {
+        JSONObject jsonObject = new JSONObject();
+        // 执行程序
+        jsonObject.put("serviceUri", Constants.DEFAULT_SERVICE_PACKAGE+"."+serviceUri);
+        // 调用函数
+        jsonObject.put("invoke", invoke);
+        // 传递参数
+        jsonObject.put("params", params);
+        return jsonObject;
     }
 
 

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.frank.sbr.action.consumer.mapper.UserMapper">
+  <resultMap id="BaseResultMap" type="com.frank.sbr.action.po.User">
+    <id column="uid" jdbcType="VARCHAR" property="uid" />
+    <result column="uName" jdbcType="VARCHAR" property="uname" />
+    <result column="uAmount" jdbcType="INTEGER" property="uamount" />
+    <result column="uCode" jdbcType="VARCHAR" property="ucode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    uid, uName, uAmount, uCode
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from user
+    where uid = #{uid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from user
+    where uid = #{uid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.frank.sbr.action.po.User">
+    insert into user (uid, uName, uAmount, 
+      uCode)
+    values (#{uid,jdbcType=VARCHAR}, #{uname,jdbcType=VARCHAR}, #{uamount,jdbcType=INTEGER}, 
+      #{ucode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.frank.sbr.action.po.User">
+    insert into user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="uid != null">
+        uid,
+      </if>
+      <if test="uname != null">
+        uName,
+      </if>
+      <if test="uamount != null">
+        uAmount,
+      </if>
+      <if test="ucode != null">
+        uCode,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="uid != null">
+        #{uid,jdbcType=VARCHAR},
+      </if>
+      <if test="uname != null">
+        #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="uamount != null">
+        #{uamount,jdbcType=INTEGER},
+      </if>
+      <if test="ucode != null">
+        #{ucode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.frank.sbr.action.po.User">
+    update user
+    <set>
+      <if test="uname != null">
+        uName = #{uname,jdbcType=VARCHAR},
+      </if>
+      <if test="uamount != null">
+        uAmount = #{uamount,jdbcType=INTEGER},
+      </if>
+      <if test="ucode != null">
+        uCode = #{ucode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where uid = #{uid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.frank.sbr.action.po.User">
+    update user
+    set uName = #{uname,jdbcType=VARCHAR},
+      uAmount = #{uamount,jdbcType=INTEGER},
+      uCode = #{ucode,jdbcType=VARCHAR}
+    where uid = #{uid,jdbcType=VARCHAR}
+  </update>
+</mapper>

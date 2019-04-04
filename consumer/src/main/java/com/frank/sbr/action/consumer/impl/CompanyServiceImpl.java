@@ -36,4 +36,14 @@ public class CompanyServiceImpl implements CompanyService {
         }
         return true;
     }
+
+    @Override
+    public boolean updateCompany(String companyString) {
+        Company company = JsonUtil.jsonToBean(companyString, Company.class);
+        int updateNum = companyMapper.updateByPrimaryKeySelective(company);
+        if(updateNum > 0) {
+            return true;
+        }
+        return false;
+    }
 }

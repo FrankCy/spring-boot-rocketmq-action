@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.frank.sbr.action.consumer.mapper.DeptMapper">
+  <resultMap id="BaseResultMap" type="com.frank.sbr.action.po.Dept">
+    <id column="dId" jdbcType="VARCHAR" property="did" />
+    <result column="dDes" jdbcType="VARCHAR" property="ddes" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    dId, dDes
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from dept
+    where dId = #{did,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from dept
+    where dId = #{did,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.frank.sbr.action.po.Dept">
+    insert into dept (dId, dDes)
+    values (#{did,jdbcType=VARCHAR}, #{ddes,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.frank.sbr.action.po.Dept">
+    insert into dept
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="did != null">
+        dId,
+      </if>
+      <if test="ddes != null">
+        dDes,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="did != null">
+        #{did,jdbcType=VARCHAR},
+      </if>
+      <if test="ddes != null">
+        #{ddes,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.frank.sbr.action.po.Dept">
+    update dept
+    <set>
+      <if test="ddes != null">
+        dDes = #{ddes,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where dId = #{did,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.frank.sbr.action.po.Dept">
+    update dept
+    set dDes = #{ddes,jdbcType=VARCHAR}
+    where dId = #{did,jdbcType=VARCHAR}
+  </update>
+</mapper>
